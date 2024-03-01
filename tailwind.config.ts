@@ -7,11 +7,13 @@ const config: Config = {
     "./app/**/*.{js,ts,jsx,tsx,mdx}",
   ],
   theme: {
-    colors:{
-      "chessblack":	"#769656",
-      "chesswhite":"#eeeed2"
-    },
     extend: {
+      colors: {
+        transparent: "transparent",
+        current: "currentColor",
+        chessblack: "#769656",
+        chesswhite: "#eeeed2",
+      },
       backgroundImage: {
         "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",
         "gradient-conic":

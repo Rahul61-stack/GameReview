@@ -1,46 +1,45 @@
-import Image from "next/image";
-import { FC } from "react";
+"use client";
+
+import { FC, useState } from "react";
+import { Pieces } from "./pieces";
+export interface Position {
+  row: number;
+  col: number;
+}
 
 interface IProps {
-    tile:string
+  piece: string;
+  tile: boolean;
+  position: Position;
+  onTileClicked: (position: Position) => void;
+  selected: boolean;
 }
 
-const Tile:FC<IProps>=({tile})=> {
-    const arr = [1,3,5,7]
-    return ( 
-        <div>
-            {tile==="even"?(
-                <div className="flex-col-reverse">
-                    {arr.map((value)=>{
-                        return(
-                            <div>
-                                <div key={value} className="bg-chessblack flex-none h-24 w-24">
-                                    <button className="h-24 w-24"></button>
-                                </div>
-                                   
-                                <div key={value+1} className="bg-chesswhite h-24 w-24"> <button className="h-24 w-24"></button></div>
-                            </div>
-                        )
-                    })}
-                </div>
-            ):(  
-                <div className="flex-col-reverse">
-                    {arr.map((value)=>{
-                        return(
-                            <div>
-                                <div key={value} className="bg-chesswhite h-24 w-24">
-                                <button className="h-24 w-24"></button>
-                                </div>
-                                <div key={value+1} className="bg-chessblack h-24 w-24">
-                                <button className="h-24 w-24"></button>
-                                </div>
-                            </div>
-                        )
-                    })}
-                </div>
-            )}
-        </div>
-     );
-}
+const Tile: FC<IProps> = ({
+  piece,
+  tile,
+  position,
+  onTileClicked,
+  selected,
+}) => {
+  let str = piece as keyof typeof Pieces;
+  return (
+    <div
+      className={
+        "flex-none h-24 w-24 " +
+        (selected ? "bg-yellow-200" : tile ? "bg-chesswhite" : "bg-chessblack")
+      }
+    >
+      <button
+        onClick={() => {
+          onTileClicked(position);
+        }}
+        className="h-24 w-24"
+      >
+        {Pieces[str]}
+      </button>
+    </div>
+  );
+};
 
 export default Tile;
