@@ -1,4 +1,4 @@
-import { PiecesInterface } from "@/app/components/pieces";
+import { Pieces, PiecesInterface } from "@/app/components/pieces";
 import { Position } from "../../components/tile";
 
 export const getRookLegalMoves = (
@@ -9,8 +9,6 @@ export const getRookLegalMoves = (
 ) => {
   const rowAt = positionSelected.row;
   const colAt = positionSelected.col;
-  const white = piece.color;
-  const moveUp = (orientation && !white) || (!orientation && white);
   let row;
   let col;
   let legalMoves = [];
@@ -24,44 +22,21 @@ export const getRookLegalMoves = (
 
   for (let direction of directions) {
     row = rowAt + direction[0];
-    col = row + direction[1];
+    col = colAt + direction[1];
     while (row < 8 && row >= 0 && col >= 0 && col < 8) {
-      if (board[row][col].type == "") {
+      console.log(row, col);
+      if (board[row][col] == Pieces.empty) {
         legalMoves.push({ row: row, col: col });
+        row = row + direction[0];
+        col = col + direction[1];
+      } else if (piece.color != board[row][col].color) {
+        legalMoves.push({ row: row, col: col });
+        break;
       } else {
+        break;
       }
     }
   }
-
-  //   let forwardMove = true;
-  //   for (let c = 1; c < 8; c++) {
-  //     if (forwardMove) {
-  //       row = rowAt + (moveUp ? -c : c);
-  //       col = colAt;
-  //       let move = board[row][col] == "";
-  //       if (move) {
-  //         legalMoves.push({
-  //           row: row,
-  //           col: col,
-  //         });
-  //       } else {
-  //         forwardMove = !forwardMove;
-  //       }
-  //     } else {
-  //       row = rowAt + (moveUp ? c : -c);
-  //       col = colAt;
-  //       if (row >= 0 && row <= 7 && col >= 0 && col <= 7) {
-  //         console.log(row, col);
-  //         const backwardMove = board[row][col] == "";
-  //         if (backwardMove) {
-  //           legalMoves.push({
-  //             row: row,
-  //             col: col,
-  //           });
-  //         } else;
-  //       }
-  //     }
-  //   }
 
   return legalMoves;
 };

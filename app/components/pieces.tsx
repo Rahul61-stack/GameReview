@@ -62,13 +62,13 @@ export const Pieces = {
   blackKing: { image: blackKing, type: "king", color: false, side: false },
   blackQueen: { image: blackQueen, type: "queen", color: false, side: true },
   blackPawn: { image: blackPawn, type: "pawn", color: false, side: false },
-  whiteQueenRook: { image: whiteRook, type: "pawn", color: false, side: false },
-  whiteKingRook: { image: whiteRook, type: "pawn", color: false, side: false },
+  whiteQueenRook: { image: whiteRook, type: "rook", color: true, side: true },
+  whiteKingRook: { image: whiteRook, type: "rook", color: true, side: false },
   whiteQueenKnight: {
     image: whiteKnight,
     type: "knight",
     color: true,
-    side: false,
+    side: true,
   },
   whiteKingKnight: {
     image: whiteKnight,
@@ -80,7 +80,7 @@ export const Pieces = {
     image: whiteBishop,
     type: "bishop",
     color: true,
-    side: false,
+    side: true,
   },
   whiteKingBishop: {
     image: whiteBishop,
@@ -89,7 +89,7 @@ export const Pieces = {
     side: false,
   },
   whiteKing: { image: whiteKing, type: "king", color: true, side: false },
-  whiteQueen: { image: whiteQueen, type: "pawn", color: true, side: false },
+  whiteQueen: { image: whiteQueen, type: "queen", color: true, side: true },
   whitePawn: { image: whitePawn, type: "pawn", color: true, side: false },
   empty: { image: <></>, type: "", color: false, side: false },
 };

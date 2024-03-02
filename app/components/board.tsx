@@ -40,6 +40,8 @@ function Board() {
     col: -1,
   });
 
+  const [turn, setTurn] = useState(true);
+
   const getLegalMoves = (
     board: PiecesInterface[][],
     piece: PiecesInterface
@@ -56,8 +58,11 @@ function Board() {
   const movePiece = (position: Position) => {
     const row = position.row;
     const col = position.col;
+    const piece = board[row][col];
 
-    if (board[row][col] != Pieces.empty && !positionSelected.selected) {
+    if (!positionSelected.selected && piece.color != turn) return;
+
+    if (piece != Pieces.empty && !positionSelected.selected) {
       setPositionSelected({
         row: row,
         col: col,
@@ -67,17 +72,18 @@ function Board() {
         row: row,
         col: col,
       });
-    } else if (board[row][col] == Pieces.empty && positionSelected.selected) {
+      console.log("done");
+    } else if (piece == Pieces.empty && positionSelected.selected) {
       const legalMoves = getLegalMoves(
         board,
         board[positionSelected.row][positionSelected.col]
       );
 
-      console.log(legalMoves);
-
       const expectedMoveIsLegal = legalMoves.find((obj) => {
         return obj.row === row && obj.col === col;
       });
+
+      console.log(expectedMoveIsLegal);
 
       if (expectedMoveIsLegal) {
         board[row][col] = board[positionSelected.row][positionSelected.col];
@@ -87,6 +93,7 @@ function Board() {
           col: positionSelected.col,
         });
         setBoard(board);
+        setTurn(!turn);
         setPositionSelected({
           row: row,
           col: col,
@@ -103,17 +110,56 @@ function Board() {
           col: -1,
         });
       }
-    } else if (board[row][col] != Pieces.empty && positionSelected.selected) {
-      setPositionSelected({
-        row: row,
-        col: col,
-        selected: true,
-      });
-      setLastSelectedPosition({
-        row: -1,
-        col: -1,
-      });
-    } else if (board[row][col] == Pieces.empty && !positionSelected.selected) {
+    } else if (piece != Pieces.empty && positionSelected.selected) {
+      if (
+        piece.color != board[positionSelected.row][positionSelected.col].color
+      ) {
+        const legalMoves = getLegalMoves(
+          board,
+          board[positionSelected.row][positionSelected.col]
+        );
+
+        const expectedMoveIsLegal = legalMoves.find((obj) => {
+          return obj.row === row && obj.col === col;
+        });
+
+        if (expectedMoveIsLegal) {
+          board[row][col] = board[positionSelected.row][positionSelected.col];
+          board[positionSelected.row][positionSelected.col] = Pieces.empty;
+          setLastSelectedPosition({
+            row: positionSelected.row,
+            col: positionSelected.col,
+          });
+          setBoard(board);
+          setTurn(!turn);
+          setPositionSelected({
+            row: row,
+            col: col,
+            selected: false,
+          });
+        } else {
+          setPositionSelected({
+            row: -1,
+            col: -1,
+            selected: false,
+          });
+          setLastSelectedPosition({
+            row: -1,
+            col: -1,
+          });
+        }
+      } else {
+        setPositionSelected({
+          row: row,
+          col: col,
+          selected: true,
+        });
+        setLastSelectedPosition({
+          row: -1,
+          col: -1,
+        });
+      }
+    } else if (piece == Pieces.empty && !positionSelected.selected) {
       setPositionSelected({
         row: -1,
         col: -1,
@@ -128,6 +174,7 @@ function Board() {
 
   return (
     <div className="flex-col">
+      <h1 className="">{(turn ? "WHITE" : "BLACK") + " to move"}</h1>
       {returnBoard(8).map((row, rowIndex) => {
         return (
           <div className="flex" key={rowIndex}>
