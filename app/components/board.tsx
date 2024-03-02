@@ -1,9 +1,10 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useState } from "react";
 import legalMovesGenerator from "./legalMoves";
 import Tile, { Position } from "./tile";
 import { initialBoardWhite, initialBoardBlack } from "./initialBoard";
+import { Pieces, PiecesInterface } from "./pieces";
 
 const returnBoard = (size: number) => {
   let board: boolean[][] = [];
@@ -39,14 +40,16 @@ function Board() {
     col: -1,
   });
 
-  const getLegalMoves = (board: string[][], piece: string) => {
-    const rowAt = positionSelected.row;
-    const colAt = positionSelected.col;
-    const orientation = boardOrientation;
-    const white = piece.includes("white");
-    const moveUp = (orientation && !white) || (!orientation && white);
-    const legalMoves = legalMovesGenerator(piece,board,rowAt,colAt,moveUp)
-
+  const getLegalMoves = (
+    board: PiecesInterface[][],
+    piece: PiecesInterface
+  ) => {
+    const legalMoves = legalMovesGenerator(
+      piece,
+      board,
+      positionSelected,
+      boardOrientation
+    );
     return legalMoves;
   };
 
@@ -54,7 +57,7 @@ function Board() {
     const row = position.row;
     const col = position.col;
 
-    if (board[row][col] != "" && !positionSelected.selected) {
+    if (board[row][col] != Pieces.empty && !positionSelected.selected) {
       setPositionSelected({
         row: row,
         col: col,
@@ -64,7 +67,7 @@ function Board() {
         row: row,
         col: col,
       });
-    } else if (board[row][col] == "" && positionSelected.selected) {
+    } else if (board[row][col] == Pieces.empty && positionSelected.selected) {
       const legalMoves = getLegalMoves(
         board,
         board[positionSelected.row][positionSelected.col]
@@ -78,7 +81,7 @@ function Board() {
 
       if (expectedMoveIsLegal) {
         board[row][col] = board[positionSelected.row][positionSelected.col];
-        board[positionSelected.row][positionSelected.col] = "";
+        board[positionSelected.row][positionSelected.col] = Pieces.empty;
         setLastSelectedPosition({
           row: positionSelected.row,
           col: positionSelected.col,
@@ -100,7 +103,7 @@ function Board() {
           col: -1,
         });
       }
-    } else if (board[row][col] != "" && positionSelected.selected) {
+    } else if (board[row][col] != Pieces.empty && positionSelected.selected) {
       setPositionSelected({
         row: row,
         col: col,
@@ -110,7 +113,7 @@ function Board() {
         row: -1,
         col: -1,
       });
-    } else if (board[row][col] == "" && !positionSelected.selected) {
+    } else if (board[row][col] == Pieces.empty && !positionSelected.selected) {
       setPositionSelected({
         row: -1,
         col: -1,

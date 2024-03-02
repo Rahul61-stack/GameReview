@@ -1,14 +1,14 @@
 "use client";
 
 import { FC, useState } from "react";
-import { Pieces } from "./pieces";
+import { Pieces, PiecesInterface } from "./pieces";
 export interface Position {
   row: number;
   col: number;
 }
 
 interface IProps {
-  piece: string;
+  piece: PiecesInterface;
   tile: boolean;
   position: Position;
   onTileClicked: (position: Position) => void;
@@ -22,7 +22,6 @@ const Tile: FC<IProps> = ({
   onTileClicked,
   selected,
 }) => {
-  let str = piece as keyof typeof Pieces;
   return (
     <div
       className={
@@ -36,7 +35,7 @@ const Tile: FC<IProps> = ({
         }}
         className="h-24 w-24"
       >
-        {Pieces[str]}
+        {piece.image}
       </button>
     </div>
   );
