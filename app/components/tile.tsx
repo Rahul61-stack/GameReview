@@ -27,7 +27,7 @@ const Tile: FC<IProps> = ({
     <div
       className={
         "flex-none h-24 w-24 " +
-        (selected ? "bg-yellow-200" : tile ? "bg-chesswhite" : "bg-chessblack")
+        (selected ? "bg-amber-200" : tile ? "bg-chesswhite" : "bg-chessblack")
       }
     >
       <button

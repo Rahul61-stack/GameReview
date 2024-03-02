@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
+import legalMovesGenerator from "./legalMoves";
 import Tile, { Position } from "./tile";
 import { initialBoardWhite, initialBoardBlack } from "./initialBoard";
 
@@ -44,42 +45,9 @@ function Board() {
     const orientation = boardOrientation;
     const white = piece.includes("white");
     const moveUp = (orientation && !white) || (!orientation && white);
-    let legalMoves = [];
-    let row;
-    let col;
+    const legalMoves = legalMovesGenerator(piece,board,rowAt,colAt,moveUp)
 
-    if (piece.includes("Pawn")) {
-      // Check if pawn can move 1 square vertically
-      row = rowAt + (moveUp ? -1 : 1);
-      col = colAt;
-      const move1 = board[row][col] == "";
-
-      if (move1) {
-        legalMoves.push({
-          row: row,
-          col: col,
-        });
-      }
-
-      // Check if pawn can move 2 squares vertically
-      row = rowAt + (moveUp ? -2 : 2);
-      col = colAt;
-      const move2 =
-        move1 &&
-        board[row][col] == "" &&
-        ((moveUp && rowAt == 6) || (!moveUp && rowAt == 1));
-
-      if (move2) {
-        legalMoves.push({
-          row: row,
-          col: col,
-        });
-      }
-
-      return legalMoves;
-    }
-
-    return [];
+    return legalMoves;
   };
 
   const movePiece = (position: Position) => {
@@ -99,7 +67,7 @@ function Board() {
     } else if (board[row][col] == "" && positionSelected.selected) {
       const legalMoves = getLegalMoves(
         board,
-        board[lastSelectedPosition.row][lastSelectedPosition.col]
+        board[positionSelected.row][positionSelected.col]
       );
 
       console.log(legalMoves);
