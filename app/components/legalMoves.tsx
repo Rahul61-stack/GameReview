@@ -3,6 +3,7 @@ import { getRookLegalMoves } from "../lib/pieceLogic/rookLogic";
 import { getKnightLegalMoves } from "../lib/pieceLogic/knightLogic";
 import { Position } from "./tile";
 import { PiecesInterface } from "./pieces";
+import { getBishopLegalMoves } from "../lib/pieceLogic/bishopLogic";
 
 const legalMovesGenerator = (
   piece: PiecesInterface,
@@ -32,6 +33,27 @@ const legalMovesGenerator = (
       positionSelected,
       boardOrientation
     );
+  } else if (piece.type == "bishop") {
+    legalMoves = getBishopLegalMoves(
+      piece,
+      board,
+      positionSelected,
+      boardOrientation
+    );
+  } else if(piece.type == "queen"){
+    let rookMoves = legalMoves = getRookLegalMoves(
+      piece,
+      board,
+      positionSelected,
+      boardOrientation
+    );
+    let bishopMoves = legalMoves = getBishopLegalMoves(
+      piece,
+      board,
+      positionSelected,
+      boardOrientation
+    );
+    legalMoves = bishopMoves
   }
   return legalMoves;
 };
