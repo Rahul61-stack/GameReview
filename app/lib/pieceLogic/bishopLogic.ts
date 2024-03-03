@@ -1,4 +1,4 @@
-import { Pieces, PiecesInterface } from "@/app/components/pieces";
+import { PieceType, Pieces, PiecesInterface } from "@/app/components/pieces";
 import { Position } from "../../components/tile";
 
 export const getBishopLegalMoves = (
@@ -12,25 +12,34 @@ export const getBishopLegalMoves = (
   let row;
   let col;
   let legalMoves: any[] = [];
-  let direction = [[1, 1],[1,-1],[-1,1],[-1,-1]
+  let direction = [
+    [1, 1],
+    [1, -1],
+    [-1, 1],
+    [-1, -1],
   ];
-  direction.forEach((value)=>{
-    for (let i = 0; i < 8; i++) {
-        row = rowAt + i*value[0]
-        col = colAt + i*value[1]
-        if (row <= 7 && row >= 0 && col <= 7 && col >= 0){
-            console.log(row,col)
-            const move = board[row][col] == Pieces.empty
-            if(move){
-                legalMoves.push({
-                    row:row,
-                    col:col
-                })
-            }else {break}
-        }
+  direction.forEach((value) => {
+    row = rowAt + value[0];
+    col = colAt + value[1];
+    while (row < 8 && row >= 0 && col < 8 && col >= 0) {
+      if (board[row][col].type == PieceType.none) {
+        legalMoves.push({
+          row: row,
+          col: col,
+        });
+        row = row + value[0];
+        col = col + value[1];
+      } else if (board[row][col].color != piece.color) {
+        legalMoves.push({
+          row: row,
+          col: col,
+        });
+        break;
+      } else {
+        break;
+      }
     }
-  })
-  
+  });
 
   return legalMoves;
 };

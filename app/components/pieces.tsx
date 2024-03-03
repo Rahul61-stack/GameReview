@@ -1,4 +1,26 @@
 import Image from "next/image";
+import { getPawnLegalMoves } from "../lib/pieceLogic/pawnLogic";
+import { Position } from "./tile";
+import { getQueenLegalMoves } from "../lib/pieceLogic/queenLogic";
+import { getKnightLegalMoves } from "../lib/pieceLogic/knightLogic";
+import { getBishopLegalMoves } from "../lib/pieceLogic/bishopLogic";
+import { getRookLegalMoves } from "../lib/pieceLogic/rookLogic";
+
+export enum Color {
+  white = 1,
+  black = 0,
+  none = -1,
+}
+
+export enum PieceType {
+  rook,
+  knight,
+  bishop,
+  queen,
+  king,
+  pawn,
+  none,
+}
 
 const blackBishop = (
   <Image alt="" src="/BlackBishop.png" height={90} width={90} />
@@ -27,69 +49,166 @@ const whiteRook = <Image alt="" src="/WhiteRook.png" height={90} width={90} />;
 
 export interface PiecesInterface {
   image: JSX.Element;
-  type: string;
-  color: boolean;
+  type: PieceType;
+  color: Color;
   side: boolean;
+  legalMoves(
+    pieces: PiecesInterface,
+    board: PiecesInterface[][],
+    position: Position,
+    boardOrientation: boolean
+  ): {
+    row: number;
+    col: number;
+  }[];
 }
 
+const dummyMoves = (
+  pieces: PiecesInterface,
+  board: PiecesInterface[][],
+  position: Position,
+  boardOrientation: boolean
+) => {
+  return [
+    {
+      row: -1,
+      col: -1,
+    },
+  ];
+};
+
 export const Pieces = {
-  blackQueenRook: { image: blackRook, type: "rook", color: false, side: true },
-  blackKingRook: { image: blackRook, type: "rook", color: false, side: false },
+  blackQueenRook: {
+    image: blackRook,
+    type: PieceType.rook,
+    color: Color.black,
+    side: true,
+    legalMoves: getQueenLegalMoves,
+  },
+  blackKingRook: {
+    image: blackRook,
+    type: PieceType.rook,
+    color: Color.black,
+    side: false,
+    legalMoves: getPawnLegalMoves,
+  },
   blackQueenKnight: {
     image: blackKnight,
-    type: "knight",
-    color: false,
+    type: PieceType.knight,
+    color: Color.black,
     side: true,
+    legalMoves: getKnightLegalMoves,
   },
   blackKingKnight: {
     image: blackKnight,
-    type: "knight",
-    color: false,
+    type: PieceType.knight,
+    color: Color.black,
     side: false,
+    legalMoves: getKnightLegalMoves,
   },
   blackQueenBishop: {
     image: blackBishop,
-    type: "bishop",
-    color: false,
+    type: PieceType.bishop,
+    color: Color.black,
     side: true,
+    legalMoves: getBishopLegalMoves,
   },
   blackKingBishop: {
     image: blackBishop,
-    type: "bishop",
-    color: false,
+    type: PieceType.bishop,
+    color: Color.black,
     side: false,
+    legalMoves: getBishopLegalMoves,
   },
-  blackKing: { image: blackKing, type: "king", color: false, side: false },
-  blackQueen: { image: blackQueen, type: "queen", color: false, side: true },
-  blackPawn: { image: blackPawn, type: "pawn", color: false, side: false },
-  whiteQueenRook: { image: whiteRook, type: "rook", color: true, side: true },
-  whiteKingRook: { image: whiteRook, type: "rook", color: true, side: false },
+  blackKing: {
+    image: blackKing,
+    type: PieceType.king,
+    color: Color.black,
+    side: false,
+    legalMoves: getPawnLegalMoves,
+  },
+  blackQueen: {
+    image: blackQueen,
+    type: PieceType.queen,
+    color: Color.black,
+    side: true,
+    legalMoves: getQueenLegalMoves,
+  },
+  blackPawn: {
+    image: blackPawn,
+    type: PieceType.pawn,
+    color: Color.black,
+    side: false,
+    legalMoves: getPawnLegalMoves,
+  },
+  whiteQueenRook: {
+    image: whiteRook,
+    type: PieceType.rook,
+    color: Color.white,
+    side: true,
+    legalMoves: getRookLegalMoves,
+  },
+  whiteKingRook: {
+    image: whiteRook,
+    type: PieceType.rook,
+    color: Color.white,
+    side: false,
+    legalMoves: getRookLegalMoves,
+  },
   whiteQueenKnight: {
     image: whiteKnight,
-    type: "knight",
-    color: true,
+    type: PieceType.knight,
+    color: Color.white,
     side: true,
+    legalMoves: getKnightLegalMoves,
   },
   whiteKingKnight: {
     image: whiteKnight,
-    type: "knight",
-    color: true,
+    type: PieceType.knight,
+    color: Color.white,
     side: false,
+    legalMoves: getKnightLegalMoves,
   },
   whiteQueenBishop: {
     image: whiteBishop,
-    type: "bishop",
-    color: true,
+    type: PieceType.bishop,
+    color: Color.white,
     side: true,
+    legalMoves: getBishopLegalMoves,
   },
   whiteKingBishop: {
     image: whiteBishop,
-    type: "bishop",
-    color: true,
+    type: PieceType.bishop,
+    color: Color.white,
     side: false,
+    legalMoves: getBishopLegalMoves,
   },
-  whiteKing: { image: whiteKing, type: "king", color: true, side: false },
-  whiteQueen: { image: whiteQueen, type: "queen", color: true, side: true },
-  whitePawn: { image: whitePawn, type: "pawn", color: true, side: false },
-  empty: { image: <></>, type: "", color: false, side: false },
+  whiteKing: {
+    image: whiteKing,
+    type: PieceType.king,
+    color: Color.white,
+    side: false,
+    legalMoves: getPawnLegalMoves,
+  },
+  whiteQueen: {
+    image: whiteQueen,
+    type: PieceType.queen,
+    color: Color.white,
+    side: true,
+    legalMoves: getQueenLegalMoves,
+  },
+  whitePawn: {
+    image: whitePawn,
+    type: PieceType.pawn,
+    color: Color.white,
+    side: false,
+    legalMoves: getPawnLegalMoves,
+  },
+  empty: {
+    image: <></>,
+    type: PieceType.none,
+    color: Color.none,
+    side: false,
+    legalMoves: dummyMoves,
+  },
 };

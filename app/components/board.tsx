@@ -4,7 +4,7 @@ import { useState } from "react";
 import legalMovesGenerator from "./legalMoves";
 import Tile, { Position } from "./tile";
 import { initialBoardWhite, initialBoardBlack } from "./initialBoard";
-import { Pieces, PiecesInterface } from "./pieces";
+import { Color, Pieces, PiecesInterface } from "./pieces";
 
 const returnBoard = (size: number) => {
   let board: boolean[][] = [];
@@ -60,7 +60,8 @@ function Board() {
     const col = position.col;
     const piece = board[row][col];
 
-    if (!positionSelected.selected && piece.color != turn) return;
+    if (!positionSelected.selected && (piece.color == Color.white) != turn)
+      return;
 
     if (piece != Pieces.empty && !positionSelected.selected) {
       setPositionSelected({
@@ -72,7 +73,6 @@ function Board() {
         row: row,
         col: col,
       });
-      console.log("done");
     } else if (piece == Pieces.empty && positionSelected.selected) {
       const legalMoves = getLegalMoves(
         board,
@@ -82,8 +82,6 @@ function Board() {
       const expectedMoveIsLegal = legalMoves.find((obj) => {
         return obj.row === row && obj.col === col;
       });
-
-      console.log(expectedMoveIsLegal);
 
       if (expectedMoveIsLegal) {
         board[row][col] = board[positionSelected.row][positionSelected.col];
