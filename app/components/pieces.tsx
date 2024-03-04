@@ -5,6 +5,7 @@ import { getQueenLegalMoves } from "../lib/pieceLogic/queenLogic";
 import { getKnightLegalMoves } from "../lib/pieceLogic/knightLogic";
 import { getBishopLegalMoves } from "../lib/pieceLogic/bishopLogic";
 import { getRookLegalMoves } from "../lib/pieceLogic/rookLogic";
+import { getKingLegalMoves } from "../lib/pieceLogic/kingLogic";
 
 export enum Color {
   white = 1,
@@ -83,14 +84,14 @@ export const Pieces = {
     type: PieceType.rook,
     color: Color.black,
     side: true,
-    legalMoves: getQueenLegalMoves,
+    legalMoves: getRookLegalMoves,
   },
   blackKingRook: {
     image: blackRook,
     type: PieceType.rook,
     color: Color.black,
     side: false,
-    legalMoves: getPawnLegalMoves,
+    legalMoves: getRookLegalMoves,
   },
   blackQueenKnight: {
     image: blackKnight,
@@ -125,7 +126,7 @@ export const Pieces = {
     type: PieceType.king,
     color: Color.black,
     side: false,
-    legalMoves: getPawnLegalMoves,
+    legalMoves: getKingLegalMoves,
   },
   blackQueen: {
     image: blackQueen,
@@ -188,7 +189,7 @@ export const Pieces = {
     type: PieceType.king,
     color: Color.white,
     side: false,
-    legalMoves: getPawnLegalMoves,
+    legalMoves: getKingLegalMoves,
   },
   whiteQueen: {
     image: whiteQueen,

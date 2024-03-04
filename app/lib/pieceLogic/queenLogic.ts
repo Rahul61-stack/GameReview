@@ -1,4 +1,4 @@
-import { Pieces, PiecesInterface } from "@/app/components/pieces";
+import { PiecesInterface } from "@/app/components/pieces";
 import { Position } from "../../components/tile";
 import { getRookLegalMoves } from "./rookLogic";
 import { getBishopLegalMoves } from "./bishopLogic";

@@ -4,7 +4,8 @@ import { useState } from "react";
 import legalMovesGenerator from "./legalMoves";
 import Tile, { Position } from "./tile";
 import { initialBoardWhite, initialBoardBlack } from "./initialBoard";
-import { Color, Pieces, PiecesInterface } from "./pieces";
+import { Color, Pieces, PiecesInterface, PieceType } from "./pieces";
+import { castlingLegal } from "../lib/matchLogic/castlingLogic";
 
 const returnBoard = (size: number) => {
   let board: boolean[][] = [];
@@ -27,7 +28,7 @@ const boardOrientation = true;
 
 function Board() {
   const [board, setBoard] = useState(
-    boardOrientation ? initialBoardBlack : initialBoardWhite
+    boardOrientation ? initialBoardBlack : initialBoardWhite,
   );
   const [positionSelected, setPositionSelected] = useState({
     row: -1,
@@ -44,13 +45,13 @@ function Board() {
 
   const getLegalMoves = (
     board: PiecesInterface[][],
-    piece: PiecesInterface
+    piece: PiecesInterface,
   ) => {
     const legalMoves = legalMovesGenerator(
       piece,
       board,
       positionSelected,
-      boardOrientation
+      boardOrientation,
     );
     return legalMoves;
   };
@@ -76,7 +77,7 @@ function Board() {
     } else if (piece == Pieces.empty && positionSelected.selected) {
       const legalMoves = getLegalMoves(
         board,
-        board[positionSelected.row][positionSelected.col]
+        board[positionSelected.row][positionSelected.col],
       );
 
       const expectedMoveIsLegal = legalMoves.find((obj) => {
@@ -114,7 +115,7 @@ function Board() {
       ) {
         const legalMoves = getLegalMoves(
           board,
-          board[positionSelected.row][positionSelected.col]
+          board[positionSelected.row][positionSelected.col],
         );
 
         const expectedMoveIsLegal = legalMoves.find((obj) => {
@@ -145,6 +146,34 @@ function Board() {
             row: -1,
             col: -1,
           });
+        }
+      } else if (
+        piece.type == PieceType.rook &&
+        piece.color == board[positionSelected.row][positionSelected.col].color
+      ) {
+        console.log("IN FUNCTION");
+        const castling = castlingLegal(
+          board,
+          positionSelected,
+          boardOrientation,
+          position,
+        );
+        if (castling.kingSide && position.col < positionSelected.col) {
+          board[positionSelected.row][positionSelected.col - 2] =
+            board[positionSelected.row][positionSelected.col];
+          board[positionSelected.row][positionSelected.col] = Pieces.empty;
+          board[row][col + 2] = piece;
+          board[row][col] = Pieces.empty;
+          setBoard(board);
+          setTurn(!turn);
+        } else if (castling.queenSide && position.col > positionSelected.col) {
+          board[positionSelected.row][positionSelected.col + 2] =
+            board[positionSelected.row][positionSelected.col];
+          board[positionSelected.row][positionSelected.col] = Pieces.empty;
+          board[row][col - 3] = piece;
+          board[row][col] = Pieces.empty;
+          setBoard(board);
+          setTurn(!turn);
         }
       } else {
         setPositionSelected({

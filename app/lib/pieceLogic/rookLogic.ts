@@ -24,7 +24,6 @@ export const getRookLegalMoves = (
     row = rowAt + direction[0];
     col = colAt + direction[1];
     while (row < 8 && row >= 0 && col >= 0 && col < 8) {
-      console.log(row, col);
       if (board[row][col] == Pieces.empty) {
         legalMoves.push({ row: row, col: col });
         row = row + direction[0];
