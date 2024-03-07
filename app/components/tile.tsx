@@ -13,7 +13,7 @@ interface IProps {
   position: Position;
   onTileClicked: (position: Position) => void;
   selected: boolean;
-  showLegalMove:boolean
+  showLegalMove:boolean;
 }
 
 const Tile: FC<IProps> = ({

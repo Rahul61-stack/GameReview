@@ -1,11 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import legalMovesGenerator from "./legalMoves";
 import Tile, { Position } from "./tile";
 import { initialBoardWhite, initialBoardBlack } from "./initialBoard";
-import { Color, Pieces, PiecesInterface, PieceType } from "./pieces";
-import { castlingLegal } from "../lib/matchLogic/castlingLogic";
+import { Color, Pieces } from "./pieces";
+import legalMovesGenerator2 from "./legalMoves";
+import { positionToSquare } from "../lib/utils/utils";
 
 const returnBoard = (size: number) => {
   let board: boolean[][] = [];
@@ -28,177 +28,72 @@ const boardOrientation = true;
 
 function Board() {
   const [board, setBoard] = useState(
-    boardOrientation ? initialBoardBlack : initialBoardWhite,
+    boardOrientation ? initialBoardBlack : initialBoardWhite
   );
-  const [positionSelected, setPositionSelected] = useState({
+  const [turn, setTurn] = useState(Color.white);
+  const [moves, setMoves] = useState([]);
+  const [squareSelected, setSquareSelected] = useState({
     row: -1,
     col: -1,
     selected: false,
   });
-
-  const [lastSelectedPosition, setLastSelectedPosition] = useState({
-    row: -1,
-    col: -1,
+  const [legalMoves, setLegalMoves] = useState(
+    legalMovesGenerator2(board, boardOrientation, turn)
+  );
+  const [castlingAvailable, setCastlingAvaiable] = useState({
+    blackKingSide: true,
+    blackQueenSide: true,
+    whiteKingSide: true,
+    whiteQueenSide: true,
   });
+  const [check, setCheck] = useState(false);
+  const [piecesOffBoard, setPiecesOffBoard] = useState([]);
 
-  const [turn, setTurn] = useState(true);
+  function checkPiece(position: Position) {
+    let row = position.row;
+    let col = position.col;
+    let piece = board[position.row][position.col];
 
-  const getLegalMoves = (
-    board: PiecesInterface[][],
-    piece: PiecesInterface,
-  ) => {
-    const legalMoves = legalMovesGenerator(
-      piece,
-      board,
-      positionSelected,
-      boardOrientation,
-      turn
-    );
-    return legalMoves;
-  };
-
-  const movePiece = (position: Position) => {
-    const row = position.row;
-    const col = position.col;
-    const piece = board[row][col];
-
-    if (!positionSelected.selected && (piece.color == Color.white) != turn)
+    if (piece.color != turn && !squareSelected.selected) {
       return;
-
-    if (piece != Pieces.empty && !positionSelected.selected) {
-      setPositionSelected({
-        row: row,
-        col: col,
-        selected: true,
-      });
-      setLastSelectedPosition({
-        row: row,
-        col: col,
-      });
-    } else if (piece == Pieces.empty && positionSelected.selected) {
-      const legalMoves = getLegalMoves(
-        board,
-        board[positionSelected.row][positionSelected.col],
-      );
-
-      const expectedMoveIsLegal = legalMoves.find((obj) => {
-        return obj.row === row && obj.col === col;
-      });
-
-      if (expectedMoveIsLegal) {
-        board[row][col] = board[positionSelected.row][positionSelected.col];
-        board[positionSelected.row][positionSelected.col] = Pieces.empty;
-        setLastSelectedPosition({
-          row: positionSelected.row,
-          col: positionSelected.col,
-        });
-        setBoard(board);
-        setTurn(!turn);
-        setPositionSelected({
-          row: row,
-          col: col,
-          selected: false,
-        });
-      } else {
-        setPositionSelected({
-          row: -1,
-          col: -1,
-          selected: false,
-        });
-        setLastSelectedPosition({
-          row: -1,
-          col: -1,
-        });
-      }
-    } else if (piece != Pieces.empty && positionSelected.selected) {
-      if (
-        piece.color != board[positionSelected.row][positionSelected.col].color
-      ) {
-        const legalMoves = getLegalMoves(
-          board,
-          board[positionSelected.row][positionSelected.col],
-        );
-
-        const expectedMoveIsLegal = legalMoves.find((obj) => {
-          return obj.row === row && obj.col === col;
-        });
-
-        if (expectedMoveIsLegal) {
-          board[row][col] = board[positionSelected.row][positionSelected.col];
-          board[positionSelected.row][positionSelected.col] = Pieces.empty;
-          setLastSelectedPosition({
-            row: positionSelected.row,
-            col: positionSelected.col,
-          });
-          setBoard(board);
-          setTurn(!turn);
-          setPositionSelected({
-            row: row,
-            col: col,
-            selected: false,
-          });
-        } else {
-          setPositionSelected({
-            row: -1,
-            col: -1,
-            selected: false,
-          });
-          setLastSelectedPosition({
-            row: -1,
-            col: -1,
-          });
-        }
-      } else if (
-        piece.type == PieceType.queenRook||piece.type==PieceType.kingRook &&
-        piece.color == board[positionSelected.row][positionSelected.col].color
-      ) {
-        console.log("IN FUNCTION");
-        const castling = castlingLegal(
-          board,
-          positionSelected,
-          boardOrientation,
-          position,
-        );
-        if (castling.kingSide && position.col < positionSelected.col) {
-          board[positionSelected.row][positionSelected.col - 2] =
-            board[positionSelected.row][positionSelected.col];
-          board[positionSelected.row][positionSelected.col] = Pieces.empty;
-          board[row][col + 2] = piece;
-          board[row][col] = Pieces.empty;
-          setBoard(board);
-          setTurn(!turn);
-        } else if (castling.queenSide && position.col > positionSelected.col) {
-          board[positionSelected.row][positionSelected.col + 2] =
-            board[positionSelected.row][positionSelected.col];
-          board[positionSelected.row][positionSelected.col] = Pieces.empty;
-          board[row][col - 3] = piece;
-          board[row][col] = Pieces.empty;
-          setBoard(board);
-          setTurn(!turn);
-        }
-      } else {
-        setPositionSelected({
-          row: row,
-          col: col,
-          selected: true,
-        });
-        setLastSelectedPosition({
-          row: -1,
-          col: -1,
-        });
-      }
-    } else if (piece == Pieces.empty && !positionSelected.selected) {
-      setPositionSelected({
-        row: -1,
-        col: -1,
-        selected: false,
-      });
-      setLastSelectedPosition({
-        row: -1,
-        col: -1,
-      });
     }
-  };
+    if (!squareSelected.selected) {
+      setSquareSelected({ row: row, col: col, selected: true });
+    } else {
+      if (piece.color == turn) {
+        setSquareSelected({ row: row, col: col, selected: true });
+      } else if (piece.color == Color.none) {
+        if (
+          legalMoves[
+            positionToSquare({
+              row: squareSelected.row,
+              col: squareSelected.col,
+            })
+          ].find((obj) => {
+            return obj.row === position.row && obj.col === position.col;
+          }) != undefined
+        ) {
+          board[row][col] = board[squareSelected.row][squareSelected.col];
+          board[squareSelected.row][squareSelected.col] = Pieces.empty;
+          setBoard(board);
+          setSquareSelected({ row: -1, col: -1, selected: false });
+          if (turn == Color.white) {
+            setTurn(Color.black);
+            setLegalMoves(
+              legalMovesGenerator2(board, boardOrientation, Color.black)
+            );
+          } else {
+            setTurn(Color.white);
+            setLegalMoves(
+              legalMovesGenerator2(board, boardOrientation, Color.white)
+            );
+          }
+        } else {
+          setSquareSelected({ row: -1, col: -1, selected: false });
+        }
+      }
+    }
+  }
 
   return (
     <div className="flex-col">
@@ -213,14 +108,21 @@ function Board() {
                   tile={tile}
                   piece={board[rowIndex][tileIndex]}
                   position={{ row: rowIndex, col: tileIndex }}
-                  onTileClicked={(position: Position) => movePiece(position)}
+                  onTileClicked={(position: Position) => checkPiece(position)}
                   selected={
-                    (positionSelected.row == rowIndex &&
-                      positionSelected.col == tileIndex) ||
-                    (lastSelectedPosition.row == rowIndex &&
-                      lastSelectedPosition.col == tileIndex)
-                      ? true
-                      : false
+                    squareSelected.row == rowIndex &&
+                    squareSelected.col == tileIndex
+                  }
+                  showLegalMove={
+                    squareSelected.selected &&
+                    legalMoves[
+                      positionToSquare({
+                        row: squareSelected.row,
+                        col: squareSelected.col,
+                      })
+                    ].find((obj) => {
+                      return obj.row === rowIndex && obj.col === tileIndex;
+                    }) != undefined
                   }
                 ></Tile>
               );

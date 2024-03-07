@@ -1,5 +1,4 @@
-import Board from "./components/board";
-import Board2 from "./components/board2";
+import Board2 from "./components/board";
 
 export default function Home() {
   return (
