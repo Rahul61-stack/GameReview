@@ -7,6 +7,8 @@ import { getBishopLegalMoves } from "../lib/pieceLogic/bishopLogic";
 import { getRookLegalMoves } from "../lib/pieceLogic/rookLogic";
 import { getKingLegalMoves } from "../lib/pieceLogic/kingLogic";
 
+
+
 export enum Color {
   white = 1,
   black = 0,
@@ -14,10 +16,13 @@ export enum Color {
 }
 
 export enum PieceType {
-  rook,
-  knight,
-  bishop,
+  queenRook,
+  queenKnight,
+  queenBishop,
   queen,
+  kingRook,
+  kingKnight,
+  kingBishop,
   king,
   pawn,
   none,
@@ -81,42 +86,42 @@ const dummyMoves = (
 export const Pieces = {
   blackQueenRook: {
     image: blackRook,
-    type: PieceType.rook,
+    type: PieceType.queenRook,
     color: Color.black,
     side: true,
     legalMoves: getRookLegalMoves,
   },
   blackKingRook: {
     image: blackRook,
-    type: PieceType.rook,
+    type: PieceType.kingRook,
     color: Color.black,
     side: false,
     legalMoves: getRookLegalMoves,
   },
   blackQueenKnight: {
     image: blackKnight,
-    type: PieceType.knight,
+    type: PieceType.queenKnight,
     color: Color.black,
     side: true,
     legalMoves: getKnightLegalMoves,
   },
   blackKingKnight: {
     image: blackKnight,
-    type: PieceType.knight,
+    type: PieceType.kingKnight,
     color: Color.black,
     side: false,
     legalMoves: getKnightLegalMoves,
   },
   blackQueenBishop: {
     image: blackBishop,
-    type: PieceType.bishop,
+    type: PieceType.queenBishop,
     color: Color.black,
     side: true,
     legalMoves: getBishopLegalMoves,
   },
   blackKingBishop: {
     image: blackBishop,
-    type: PieceType.bishop,
+    type: PieceType.kingBishop,
     color: Color.black,
     side: false,
     legalMoves: getBishopLegalMoves,
@@ -144,42 +149,42 @@ export const Pieces = {
   },
   whiteQueenRook: {
     image: whiteRook,
-    type: PieceType.rook,
+    type: PieceType.queenRook,
     color: Color.white,
     side: true,
     legalMoves: getRookLegalMoves,
   },
   whiteKingRook: {
     image: whiteRook,
-    type: PieceType.rook,
+    type: PieceType.kingRook,
     color: Color.white,
     side: false,
     legalMoves: getRookLegalMoves,
   },
   whiteQueenKnight: {
     image: whiteKnight,
-    type: PieceType.knight,
+    type: PieceType.queenKnight,
     color: Color.white,
     side: true,
     legalMoves: getKnightLegalMoves,
   },
   whiteKingKnight: {
     image: whiteKnight,
-    type: PieceType.knight,
+    type: PieceType.kingKnight,
     color: Color.white,
     side: false,
     legalMoves: getKnightLegalMoves,
   },
   whiteQueenBishop: {
     image: whiteBishop,
-    type: PieceType.bishop,
+    type: PieceType.queenBishop,
     color: Color.white,
     side: true,
     legalMoves: getBishopLegalMoves,
   },
   whiteKingBishop: {
     image: whiteBishop,
-    type: PieceType.bishop,
+    type: PieceType.kingBishop,
     color: Color.white,
     side: false,
     legalMoves: getBishopLegalMoves,

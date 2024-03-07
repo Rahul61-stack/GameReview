@@ -52,6 +52,7 @@ function Board() {
       board,
       positionSelected,
       boardOrientation,
+      turn
     );
     return legalMoves;
   };
@@ -148,7 +149,7 @@ function Board() {
           });
         }
       } else if (
-        piece.type == PieceType.rook &&
+        piece.type == PieceType.queenRook||piece.type==PieceType.kingRook &&
         piece.color == board[positionSelected.row][positionSelected.col].color
       ) {
         console.log("IN FUNCTION");
