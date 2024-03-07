@@ -4,7 +4,7 @@ import { useState } from "react";
 import Tile, { Position } from "./tile";
 import { initialBoardWhite, initialBoardBlack } from "./initialBoard";
 import { Color, Pieces } from "./pieces";
-import legalMovesGenerator2 from "./legalMoves";
+import legalMovesGenerator from "./legalMoves";
 import { positionToSquare } from "../lib/utils/utils";
 
 const returnBoard = (size: number) => {
@@ -38,7 +38,7 @@ function Board() {
     selected: false,
   });
   const [legalMoves, setLegalMoves] = useState(
-    legalMovesGenerator2(board, boardOrientation, turn)
+    legalMovesGenerator(board, boardOrientation, turn)
   );
   const [castlingAvailable, setCastlingAvaiable] = useState({
     blackKingSide: true,
@@ -80,12 +80,12 @@ function Board() {
           if (turn == Color.white) {
             setTurn(Color.black);
             setLegalMoves(
-              legalMovesGenerator2(board, boardOrientation, Color.black)
+              legalMovesGenerator(board, boardOrientation, Color.black)
             );
           } else {
             setTurn(Color.white);
             setLegalMoves(
-              legalMovesGenerator2(board, boardOrientation, Color.white)
+              legalMovesGenerator(board, boardOrientation, Color.white)
             );
           }
         } else {
