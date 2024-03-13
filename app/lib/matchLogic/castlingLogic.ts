@@ -33,11 +33,9 @@ export function castlingLegal(
     col = boardOrientation ? col + 1 : col - 1;
     if (col == 7) {
       queenSide = true;
-      console.log("HERE")
       break;
     }
     if (board[row][col] != Pieces.empty) {
-        console.log("SATISFY")
       break;
     }
   }

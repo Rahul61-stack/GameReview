@@ -1,4 +1,4 @@
-import { Pieces, PiecesInterface } from "@/app/components/pieces";
+import { Color, Pieces, PiecesInterface } from "@/app/components/pieces";
 import { Position } from "../../components/tile";
 
 export const getPawnLegalMoves = (
@@ -11,8 +11,8 @@ export const getPawnLegalMoves = (
   const colAt = positionSelected.col;
   const white = piece.color;
   const moveUp = (orientation && !white) || (!orientation && white);
-  let row;
-  let col;
+  let row:number;
+  let col:number;
   let legalMoves = [];
 
   // Check if pawn can move 1 square vertically
@@ -41,6 +41,27 @@ export const getPawnLegalMoves = (
       col: col,
     });
   }
-
+  row = rowAt + (moveUp ? -1:1)
+  const direction = [1,-1]
+  direction.forEach((value)=>{
+    col = colAt + value
+    if(row>=0&&row<=7&&col>=0&&col<=7){
+      if(board[rowAt][colAt].color==Color.white){
+        if(board[row][col].color==Color.black){
+          legalMoves.push({
+            row:row,
+            col:col
+          })
+        }
+      } else if(board[rowAt][colAt].color==Color.black){
+        if(board[row][col].color==Color.white){
+          legalMoves.push({
+            row:row,
+            col:col
+          })
+        }
+      }
+    }
+  })
   return legalMoves;
 };

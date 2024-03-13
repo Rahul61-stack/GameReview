@@ -13,7 +13,8 @@ interface IProps {
   position: Position;
   onTileClicked: (position: Position) => void;
   selected: boolean;
-  showLegalMove:boolean;
+  showLegalMove: boolean;
+  check:boolean
 }
 
 const Tile: FC<IProps> = ({
@@ -22,7 +23,8 @@ const Tile: FC<IProps> = ({
   position,
   onTileClicked,
   selected,
-  showLegalMove
+  showLegalMove,
+  check
 }) => {
   return (
     <div
@@ -37,7 +39,11 @@ const Tile: FC<IProps> = ({
         }}
         className="h-24 w-24"
       >
-        {showLegalMove?<div className="h-5 w-5 bg-gray-400 opacity-70 rounded-full container mx-auto my-10"></div>:<></>}
+        {showLegalMove ? (
+          <div className="h-5 w-5 bg-gray-400 opacity-70 rounded-full container mx-auto my-10"></div>
+        ) : (
+          <></>
+        )}
         {piece.image}
       </button>
     </div>
