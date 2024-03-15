@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useRef, useState } from "react";
 import Tile, { Position } from "./tile";
 import { initialBoardWhite, initialBoardBlack } from "./initialBoard";
 import { Color, PieceType, Pieces } from "./pieces";
@@ -33,7 +33,8 @@ function Board() {
   const [board, setBoard] = useState(
     boardOrientation ? initialBoardBlack : initialBoardWhite,
   );
-  const [check, setCheck] = useState<Check>({checkFrom:[],ischeck:false});
+  const [king,setKing] = useState({white:{row:7,col:4},black:{row:0,col:4}})
+  const check = useRef<Check>({ checkFrom: [], ischeck: false,king:{row:-1,col:-1} });
   const [turn, setTurn] = useState(Color.white);
   const [moves, setMoves] = useState([]);
   const [squareSelected, setSquareSelected] = useState({
@@ -42,7 +43,11 @@ function Board() {
     selected: false,
   });
   const [legalMoves, setLegalMoves] = useState(
-    legalMovesGenerator(board, boardOrientation, turn, {checkFrom:[],ischeck:false} ),
+    legalMovesGenerator(board, boardOrientation, turn, {
+      checkFrom: [],
+      ischeck: false,
+      king:{row:-1,col:-1}
+    }),
   );
   const [castlingAvailable, setCastlingAvaiable] = useState({
     blackKingSide: true,
@@ -51,7 +56,6 @@ function Board() {
     whiteQueenSide: true,
   });
   const [piecesOffBoard, setPiecesOffBoard] = useState([]);
-
   // useEffect(()=>{
   //   console.log(legalMoves)
   // },[legalMoves])
@@ -69,9 +73,9 @@ function Board() {
     } else {
       if (piece.color == turn) {
         if (
-          (board[squareSelected.row][squareSelected.col].type ==
+          board[squareSelected.row][squareSelected.col].type ==
             PieceType.king &&
-            piece.type == PieceType.rook)
+          piece.type == PieceType.rook
         ) {
           let castle = castlingLegal(
             board,
@@ -98,22 +102,31 @@ function Board() {
           board[squareSelected.row][squareSelected.col] = Pieces.empty;
           setBoard(board);
           setSquareSelected({ row: -1, col: -1, selected: false });
-          //check for checks
-          setCheck(
-            checkLogic(board, turn, boardOrientation, {
-              whitePosition: { row: 7, col: 4 },
-              blackPosition: { row: 0, col: 4 },
-            }),
+          // CHECK CHECK
+          check.current = checkLogic(board, turn, boardOrientation, position,
+            king,
           );
+
           if (turn == Color.white) {
             setTurn(Color.black);
+            console.log(check.current);
             setLegalMoves(
-              legalMovesGenerator(board, boardOrientation, Color.black, check),
+              legalMovesGenerator(
+                board,
+                boardOrientation,
+                Color.black,
+                check.current,
+              ),
             );
           } else {
             setTurn(Color.white);
             setLegalMoves(
-              legalMovesGenerator(board, boardOrientation, Color.white, check),
+              legalMovesGenerator(
+                board,
+                boardOrientation,
+                Color.white,
+                check.current,
+              ),
             );
           }
         } else {
@@ -122,7 +135,6 @@ function Board() {
       }
     }
   }
-
   return (
     <div className="flex-col">
       <h1 className="">{(turn ? "WHITE" : "BLACK") + " to move"}</h1>
@@ -137,7 +149,7 @@ function Board() {
                   piece={board[rowIndex][tileIndex]}
                   position={{ row: rowIndex, col: tileIndex }}
                   onTileClicked={(position: Position) => checkPiece(position)}
-                  check={check.ischeck}
+                  check={check.current.ischeck}
                   selected={
                     squareSelected.row == rowIndex &&
                     squareSelected.col == tileIndex
