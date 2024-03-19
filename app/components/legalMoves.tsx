@@ -1,7 +1,7 @@
 import { Position } from "./tile";
 import { PieceType, PiecesInterface } from "./pieces";
 import { Color } from "./pieces";
-import { positionToSquare } from "../lib/utils/utils";
+import { positionToSquare, squareToPosition } from "../lib/utils/utils";
 import { Check } from "../lib/matchLogic/checkLogic";
 
 export interface LegalMoves {
@@ -42,24 +42,33 @@ const legalMovesGenerator = (
     if (check.checkFrom.length == 1) {
       // BLOCK CHECK
       // TAKE PIECE THAT IS GIVING CHECK
-      check.checkFrom.forEach((possibleCheck) => {
+      const possibleCheck = check.checkFrom[0]
         for (let key in possibleMoves) {
           allLegalMoves[key] = [];
           possibleMoves[key].forEach((value) => {
-            if (value.row == possibleCheck.row && value.col == possibleCheck.col) {
-              console.log("TAKE PIECE");
-              allLegalMoves[key].push({ row: value.row, col: value.col });
-            }
-            if (check.king.row-check.king.col==value.row-value.col) {
-              console.log("BLOCK PIECE");
-              allLegalMoves[key].push({ row: value.row, col: value.col });
-            }
-            else if(check.king.row==possibleCheck.row&&check.king.row==value.row||check.king.col==possibleCheck.col&&check.king.col==value.col){
-              allLegalMoves[key].push({row:value.row,col:value.col})
+            if (
+              positionToSquare({ row: check.king.row, col: check.king.col }) !=
+              key
+            ) {
+              if (
+                value.row == possibleCheck.row &&
+                value.col == possibleCheck.col
+              ) {
+                allLegalMoves[key].push({ row: value.row, col: value.col });
+              }
+              if (check.king.row - check.king.col == value.row - value.col) {
+                allLegalMoves[key].push({ row: value.row, col: value.col });
+              } else if (
+                (check.king.row == possibleCheck.row &&
+                  check.king.row == value.row) ||
+                (check.king.col == possibleCheck.col &&
+                  check.king.col == value.col)
+              ) {
+                allLegalMoves[key].push({ row: value.row, col: value.col });
+              }
             }
           });
         }
-      });
       console.log(allLegalMoves);
     }
   }

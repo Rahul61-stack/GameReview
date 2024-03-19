@@ -6,9 +6,8 @@ import { initialBoardWhite, initialBoardBlack } from "./initialBoard";
 import { Color, PieceType, Pieces } from "./pieces";
 import legalMovesGenerator from "./legalMoves";
 import { positionToSquare } from "../lib/utils/utils";
-import { checkLogic } from "../lib/matchLogic/checkLogic";
-import { castlingLegal } from "../lib/matchLogic/castlingLogic";
-import { Check } from "../lib/matchLogic/checkLogic";
+import { Check, checkLogic } from "../lib/matchLogic/checkLogic";
+import { playMove, playCastling } from "../lib/matchLogic/playMove";
 
 const returnBoard = (size: number) => {
   let board: boolean[][] = [];
@@ -23,7 +22,6 @@ const returnBoard = (size: number) => {
     boardRow = [];
     tileColor = !tileColor;
   }
-
   return board;
 };
 
@@ -31,10 +29,17 @@ const boardOrientation = false;
 
 function Board() {
   const [board, setBoard] = useState(
-    boardOrientation ? initialBoardBlack : initialBoardWhite,
+    boardOrientation ? initialBoardBlack : initialBoardWhite
   );
-  const [king,setKing] = useState({white:{row:7,col:4},black:{row:0,col:4}})
-  const check = useRef<Check>({ checkFrom: [], ischeck: false,king:{row:-1,col:-1} });
+  const [king, setKing] = useState({
+    white: { row: 7, col: 4 },
+    black: { row: 0, col: 4 },
+  });
+  const check = useRef<Check>({
+    checkFrom: [],
+    ischeck: false,
+    king: { row: -1, col: -1 },
+  });
   const [turn, setTurn] = useState(Color.white);
   const [moves, setMoves] = useState([]);
   const [squareSelected, setSquareSelected] = useState({
@@ -46,8 +51,8 @@ function Board() {
     legalMovesGenerator(board, boardOrientation, turn, {
       checkFrom: [],
       ischeck: false,
-      king:{row:-1,col:-1}
-    }),
+      king: { row: -1, col: -1 },
+    })
   );
   const [castlingAvailable, setCastlingAvaiable] = useState({
     blackKingSide: true,
@@ -56,57 +61,42 @@ function Board() {
     whiteQueenSide: true,
   });
   const [piecesOffBoard, setPiecesOffBoard] = useState([]);
-  // useEffect(()=>{
-  //   console.log(legalMoves)
-  // },[legalMoves])
 
   function checkPiece(position: Position) {
     let row = position.row;
     let col = position.col;
     let piece = board[position.row][position.col];
 
+    //WRONG COLORED PIECE OR EMPTY TILE CLICKED
     if (piece.color != turn && !squareSelected.selected) {
       return;
     }
+    //CORRECT COLORED PIECE SELECTED
     if (!squareSelected.selected) {
       setSquareSelected({ row: row, col: col, selected: true });
-    } else {
+    }
+    //PIECE WAS SELECTED BEFOREHAND
+    else {
+      //NEW PIECE SELECTED IS OF SAME COLOR
       if (piece.color == turn) {
-        if (
-          board[squareSelected.row][squareSelected.col].type ==
-            PieceType.king &&
-          piece.type == PieceType.rook
-        ) {
-          let castle = castlingLegal(
-            board,
-            squareSelected,
-            boardOrientation,
-            position,
-          );
-          if (castle.kingSide) {
-          } else if (castle.queenSide) {
-          }
-        } else setSquareSelected({ row: row, col: col, selected: true });
-      } else {
-        if (
-          legalMoves[
-            positionToSquare({
-              row: squareSelected.row,
-              col: squareSelected.col,
-            })
-          ].find((obj) => {
-            return obj.row === position.row && obj.col === position.col;
-          }) != undefined
-        ) {
-          board[row][col] = board[squareSelected.row][squareSelected.col];
-          board[squareSelected.row][squareSelected.col] = Pieces.empty;
-          setBoard(board);
-          setSquareSelected({ row: -1, col: -1, selected: false });
-          // CHECK CHECK
-          check.current = checkLogic(board, turn, boardOrientation, position,
-            king,
-          );
-
+        //CHECK IF CASTILNG IS LEGAL
+        const values = playCastling(
+          board,
+          squareSelected,
+          boardOrientation,
+          position
+        );
+        const castle = values.castle;
+        setBoard(board);
+        setSquareSelected(values.squareSelected);
+        check.current = checkLogic(
+          board,
+          turn,
+          boardOrientation,
+          position,
+          king
+        );
+        if (values.switchTurn) {
           if (turn == Color.white) {
             setTurn(Color.black);
             console.log(check.current);
@@ -115,8 +105,8 @@ function Board() {
                 board,
                 boardOrientation,
                 Color.black,
-                check.current,
-              ),
+                check.current
+              )
             );
           } else {
             setTurn(Color.white);
@@ -125,12 +115,48 @@ function Board() {
                 board,
                 boardOrientation,
                 Color.white,
-                check.current,
-              ),
+                check.current
+              )
             );
           }
-        } else {
-          setSquareSelected({ row: -1, col: -1, selected: false });
+        }
+      }
+      //EMPTY SPACE OR OPPOSITE COLORED PIECE SELECTED
+      else {
+        const values = playMove(legalMoves, squareSelected, position, board);
+        setBoard(values.board);
+        setSquareSelected(values.squareSelected);
+        // CHECK CHECK
+        check.current = checkLogic(
+          board,
+          turn,
+          boardOrientation,
+          position,
+          king
+        );
+        if (values.switchTurn) {
+          if (turn == Color.white) {
+            setTurn(Color.black);
+            console.log(check.current);
+            setLegalMoves(
+              legalMovesGenerator(
+                board,
+                boardOrientation,
+                Color.black,
+                check.current
+              )
+            );
+          } else {
+            setTurn(Color.white);
+            setLegalMoves(
+              legalMovesGenerator(
+                board,
+                boardOrientation,
+                Color.white,
+                check.current
+              )
+            );
+          }
         }
       }
     }
