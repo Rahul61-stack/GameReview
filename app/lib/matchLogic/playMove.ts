@@ -66,6 +66,5 @@ export const playCastling = (
     } else {
       squareSelected = { row: row, col: col, selected: true };
     }
-    console.log(squareSelected);
     return { board: board, squareSelected: squareSelected, castle: castle,switchTurn:switchTurn };
   };

@@ -1,7 +1,7 @@
 import { Position } from "./tile";
-import { PieceType, PiecesInterface } from "./pieces";
+import { PiecesInterface } from "./pieces";
 import { Color } from "./pieces";
-import { positionToSquare, squareToPosition } from "../lib/utils/utils";
+import { positionToSquare } from "../lib/utils/utils";
 import { Check } from "../lib/matchLogic/checkLogic";
 
 export interface LegalMoves {
@@ -12,7 +12,7 @@ const legalMovesGenerator = (
   board: PiecesInterface[][],
   boardOrientation: boolean,
   turn: Color,
-  check: Check,
+  check: Check
 ) => {
   let piecelegalMoves: Position[] = [];
   let allLegalMoves: LegalMoves = {};
@@ -25,7 +25,7 @@ const legalMovesGenerator = (
           piece,
           board,
           { row: i, col: j },
-          boardOrientation,
+          boardOrientation
         );
         possibleMoves[
           positionToSquare({
@@ -40,36 +40,51 @@ const legalMovesGenerator = (
     allLegalMoves = possibleMoves;
   } else {
     if (check.checkFrom.length == 1) {
-      // BLOCK CHECK
-      // TAKE PIECE THAT IS GIVING CHECK
-      const possibleCheck = check.checkFrom[0]
-        for (let key in possibleMoves) {
-          allLegalMoves[key] = [];
+      const possibleCheck = check.checkFrom[0];
+      let directionCol = check.king.col > possibleCheck.col ? 1 : -1;
+      for (let key in possibleMoves) {
+        allLegalMoves[key] = [];
+        if (
+          positionToSquare({ row: check.king.row, col: check.king.col }) != key
+        ) {
           possibleMoves[key].forEach((value) => {
+            //Capture the check
             if (
-              positionToSquare({ row: check.king.row, col: check.king.col }) !=
-              key
+              value.row == possibleCheck.row &&
+              value.col == possibleCheck.col
             ) {
-              if (
-                value.row == possibleCheck.row &&
-                value.col == possibleCheck.col
-              ) {
-                allLegalMoves[key].push({ row: value.row, col: value.col });
-              }
-              if (check.king.row - check.king.col == value.row - value.col) {
-                allLegalMoves[key].push({ row: value.row, col: value.col });
-              } else if (
-                (check.king.row == possibleCheck.row &&
-                  check.king.row == value.row) ||
-                (check.king.col == possibleCheck.col &&
-                  check.king.col == value.col)
-              ) {
-                allLegalMoves[key].push({ row: value.row, col: value.col });
-              }
+              allLegalMoves[key].push({ row: value.row, col: value.col });
+            }
+            //Check from bishop or queen
+            if (
+              value.row + directionCol * value.col ==
+                possibleCheck.row + directionCol * possibleCheck.col &&
+              value.row + directionCol * value.col ==
+                check.king.row + directionCol * check.king.col
+            ) {
+              allLegalMoves[key].push({ row: value.row, col: value.col });
+            } else if (
+              value.row === check.king.row &&
+              value.row === possibleCheck.row &&
+              (check.king.col > possibleCheck.col
+                ? value.col > possibleCheck.col && value.col < check.king.col
+                : value.col < possibleCheck.col && value.col > check.king.col)
+            ) {
+              allLegalMoves[key].push({ row: value.row, col: value.col });
+            } else if (
+              value.col === check.king.col &&
+              value.col === possibleCheck.col &&
+              (check.king.row > possibleCheck.row
+                ? value.row > possibleCheck.row && value.row < check.king.row
+                : value.row < possibleCheck.row && value.row > check.king.row)
+            ) {
+              allLegalMoves[key].push({ row: value.row, col: value.col });
             }
           });
+        } else {
+          
         }
-      console.log(allLegalMoves);
+      }
     }
   }
   return allLegalMoves;

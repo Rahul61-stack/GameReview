@@ -28,15 +28,15 @@ export const getKingLegalMoves = (
     row = rowAt + value[0]
     col = colAt + value[1]
     if(row <= 7 && row >= 0 && col <= 7 && col >= 0){
-        //NEED TO ADD LOGIC IF THE POSTION OVERLAPS WITH ANY OTHER PIECE LEGAL MOVE, NOT A LEGAL MOVE
-        if(board[row][col] == Pieces.empty){
+      if(board[row][col] == Pieces.empty){
+          //NEED TO ADD LOGIC IF THE POSTION OVERLAPS WITH ANY OTHER PIECE LEGAL MOVE, NOT A LEGAL MOVE
             legalMoves.push({
                 row:row,
                 col:col
             })
         }
-        //NEED TO ADD THE LOGIC IF PIECE IS GUARDED BY SOMETHING, NOT A LEGAL MOVE
         else if(board[row][col].color!=piece.color){
+          //NEED TO ADD THE LOGIC IF PIECE IS GUARDED BY SOMETHING, NOT A LEGAL MOVE
             legalMoves.push({
                 row:row,
                 col:col
